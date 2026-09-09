@@ -2,6 +2,8 @@ package it.uniroma3.siw.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +19,9 @@ public class CategoriaViaggio {
     private String nome;
 
     private String descrizione;
+
+    @ManyToMany(mappedBy = "categorie")
+    private List<Viaggio> viaggi = new ArrayList<>();
 
     public CategoriaViaggio() {
     }
@@ -34,6 +39,9 @@ public class CategoriaViaggio {
 
     public String getDescrizione() { return descrizione; }
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+
+    public List<Viaggio> getViaggi() { return viaggi; }
+    public void setViaggi(List<Viaggio> viaggi) { this.viaggi = viaggi; }
 
     @Override
     public boolean equals(Object o) {

@@ -2,6 +2,8 @@ package it.uniroma3.siw.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,6 +30,9 @@ public class Destinazione {
     private String descrizione;
 
     private String immagineUrl;
+
+    @OneToMany(mappedBy = "destinazione", cascade = CascadeType.ALL)
+    private List<Viaggio> viaggi = new ArrayList<>();
 
     public Destinazione() {
     }
@@ -57,6 +62,9 @@ public class Destinazione {
 
     public String getImmagineUrl() { return immagineUrl; }
     public void setImmagineUrl(String immagineUrl) { this.immagineUrl = immagineUrl; }
+
+    public List<Viaggio> getViaggi() { return viaggi; }
+    public void setViaggi(List<Viaggio> viaggi) { this.viaggi = viaggi; }
 
     @Override
     public boolean equals(Object o) {
