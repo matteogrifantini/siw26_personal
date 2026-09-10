@@ -66,6 +66,12 @@ public class Viaggio {
     )
     private List<CategoriaViaggio> categorie = new ArrayList<>();
 
+    @OneToMany(mappedBy = "viaggio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prenotazione> prenotazioni = new ArrayList<>();
+
+    @OneToMany(mappedBy = "viaggio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recensione> recensioni = new ArrayList<>();
+
     public Viaggio() {
     }
 
@@ -115,6 +121,21 @@ public class Viaggio {
 
     public List<CategoriaViaggio> getCategorie() { return categorie; }
     public void setCategorie(List<CategoriaViaggio> categorie) { this.categorie = categorie; }
+
+    public List<Prenotazione> getPrenotazioni() { return prenotazioni; }
+    public void setPrenotazioni(List<Prenotazione> prenotazioni) { this.prenotazioni = prenotazioni; }
+
+    public List<Recensione> getRecensioni() { return recensioni; }
+    public void setRecensioni(List<Recensione> recensioni) { this.recensioni = recensioni; }
+
+    public double getMediaVoti() {
+        if (recensioni == null || recensioni.isEmpty()) return 0.0;
+        double somma = 0.0;
+        for (Recensione r : recensioni) {
+            somma += r.getVoto();
+        }
+        return Math.round((somma / recensioni.size()) * 10.0) / 10.0;
+    }
 
     @Override
     public boolean equals(Object o) {
