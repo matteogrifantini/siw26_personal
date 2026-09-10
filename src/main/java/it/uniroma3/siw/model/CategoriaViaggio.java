@@ -18,6 +18,7 @@ public class CategoriaViaggio {
     @Column(nullable = false, unique = true)
     private String nome;
 
+    @Column(length = 1000)
     private String descrizione;
 
     @ManyToMany(mappedBy = "categorie")
