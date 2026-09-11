@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/base :: header(${viaggio.titolo})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/base :: navbar}"></nav>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="container my-4">
+        <div class="card shadow-sm p-4 mb-4 border-0">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <img th:src="${viaggio.immagineUrl != null and !#strings.isEmpty(viaggio.immagineUrl) ? viaggio.immagineUrl : 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600'}"
+                         class="img-fluid rounded shadow-sm w-100" style="max-height: 380px; object-fit: cover;" alt="Foto viaggio"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600';">
+                </div>
+                <div class="col-md-6 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary fs-6" th:text="${viaggio.destinazione.nome + ' (' + viaggio.destinazione.paese + ')'}">Destinazione</span>
+                        <span class="star-rating">
+                            &#9733; <strong class="text-dark" th:text="${viaggio.mediaVoti}">4.8</strong>/5 
+                            <small class="text-muted" th:text="'(' + ${recensioni.size()} + ' recensioni)'">(0)</small>
+                        </span>
+                    </div>
+
+                    <h1 class="h2 fw-bold text-dark mb-2" th:text="${viaggio.titolo}">Titolo Viaggio</h1>
+                    <p class="text-secondary mb-3" th:text="${viaggio.descrizione}">Descrizione completa del viaggio...</p>
+
+                    <div class="row g-2 mb-3 small text-muted">
+                        <div class="col-6"><strong>Durata:</strong> <span th:text="${viaggio.durataGiorni}">7</span> giorni</div>
+                        <div class="col-6"><strong>Posti rimasti:</strong> 
+                            <span th:text="${viaggio.postiDisponibili}" th:classappend="${viaggio.postiDisponibili > 0} ? 'text-success fw-bold' : 'text-danger fw-bold'">10</span>
+                        </div>
+                        <div class="col-6"><strong>Partenza:</strong> <span th:text="${#temporals.format(viaggio.dataInizio, 'dd/MM/yyyy')}">01/10/2026</span></div>
+                        <div class="col-6"><strong>Ritorno:</strong> <span th:text="${#temporals.format(viaggio.dataFine, 'dd/MM/yyyy')}">10/10/2026</span></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="badge bg-light text-secondary border me-1" th:each="cat : ${viaggio.categorie}" th:text="${cat.nome}">Categoria</span>
+                    </div>
+
+                    <div class="mt-auto p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <small class="text-muted d-block">Prezzo a persona</small>
+                                <span class="h3 fw-bold text-primary mb-0" th:text="${viaggio.prezzo + ' €'}">100 €</span>
+                            </div>
+                        </div>
+
+                        <div sec:authorize="isAuthenticated()">
+                            <form th:if="${viaggio.postiDisponibili > 0}" th:action="@{/prenotazioni/effettua}" method="post" class="row g-2 align-items-center">
+                                <input type="hidden" name="viaggioId" th:value="${viaggio.id}">
+                                <div class="col-auto">
+                                    <label for="numeroPartecipanti" class="col-form-label small fw-bold">Partecipanti:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="numeroPartecipanti" name="numeroPartecipanti" class="form-select form-select-sm">
+                                        <option th:each="n : ${#numbers.sequence(1, viaggio.postiDisponibili > 5 ? 5 : viaggio.postiDisponibili)}" 
+                                                th:value="${n}" th:text="${n} + ' persona/e'"></option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold w-100">
+                                        <i class="bi bi-cart-check me-1"></i>Prenota Ora
+                                    </button>
+                                </div>
+                            </form>
+                            <div th:if="${viaggio.postiDisponibili == 0}" class="alert alert-danger py-2 mb-0 small text-center">
+                                Sold Out - Non ci sono posti disponibili per questa data.
+                            </div>
+                        </div>
+
+                        <div sec:authorize="isAnonymous()">
+                            <a th:href="@{/login}" class="btn btn-sm btn-outline-primary w-100">Accedi per prenotare questo viaggio</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <section class="card shadow-sm p-4 border-0 mt-4">
+            <h2 class="h4 fw-bold mb-3">Recensioni dei Viaggiatori</h2>
+
+            <div th:if="${haGiaRecensito and propriaRecensione != null}" class="card border-primary mb-4 bg-light">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+                    <span class="small fw-bold">La tua recensione</span>
+                    <span class="small" th:text="${#temporals.format(propriaRecensione.dataRecensione, 'dd/MM/yyyy')}">Data</span>
+                </div>
+                <div class="card-body py-2">
+                    <div class="star-rating mb-1">
+                        <span th:each="i : ${#numbers.sequence(1, propriaRecensione.voto)}">&#9733;</span>
+                    </div>
+                    <h3 class="h6 fw-bold mb-1" th:text="${propriaRecensione.titolo}">Titolo</h3>
+                    <p class="small text-secondary mb-2" th:text="${propriaRecensione.commento}">Commento...</p>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{'/recensioni/modifica/' + ${propriaRecensione.id}}" class="btn btn-sm btn-outline-primary">Modifica</a>
+                        <form th:action="@{'/recensioni/elimina/' + ${propriaRecensione.id}}" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confermi eliminazione?')">Elimina</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div sec:authorize="isAuthenticated()" th:if="${!haGiaRecensito}" class="card p-3 mb-4 bg-light border-0">
+                <h3 class="h6 fw-bold mb-2">Scrivi la tua recensione</h3>
+                <form th:action="@{/recensioni/salva}" method="post">
+                    <input type="hidden" name="viaggioId" th:value="${viaggio.id}">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Voto</label>
+                            <select id="voto" name="voto" class="form-select form-select-sm" required>
+                                <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733; (5/5)</option>
+                                <option value="4">&#9733;&#9733;&#9733;&#9733; (4/5)</option>
+                                <option value="3">&#9733;&#9733;&#9733; (3/5)</option>
+                                <option value="2">&#9733;&#9733; (2/5)</option>
+                                <option value="1">&#9733; (1/5)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <label for="titolo" class="form-label small fw-bold">Titolo</label>
+                            <input type="text" id="titolo" name="titolo" class="form-control form-control-sm" placeholder="es. Viaggio indimenticabile" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="commento" class="form-label small fw-bold">Commento</label>
+                        <textarea id="commento" name="commento" class="form-control form-control-sm" rows="2" placeholder="Racconta la tua esperienza..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">Pubblica Recensione</button>
+                </form>
+            </div>
+
+            <div th:if="${recensioni.isEmpty()}" class="text-muted small">
+                Non ci sono ancora recensioni per questo viaggio. Sii il primo a scriverne una!
+            </div>
+
+            <div class="list-group list-group-flush" th:unless="${recensioni.isEmpty()}">
+                <div class="list-group-item px-0 py-3" th:each="r : ${recensioni}">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div>
+                            <span class="star-rating small">
+                                <span th:each="i : ${#numbers.sequence(1, r.voto)}">&#9733;</span>
+                            </span>
+                            <strong class="ms-2" th:text="${r.titolo}">Titolo</strong>
+                        </div>
+                        <span class="text-muted small" th:text="${#temporals.format(r.dataRecensione, 'dd/MM/yyyy')}">Data</span>
+                    </div>
+                    <p class="small text-secondary mb-1" th:text="${r.commento}">Commento</p>
+                    <small class="text-muted">Autore: <span th:text="${r.autore.nomeCompleto}">Autore</span></small>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

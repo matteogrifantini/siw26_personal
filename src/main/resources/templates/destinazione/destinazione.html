@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: header(${destinazione.nome})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/base :: navbar}"></nav>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="container my-4">
+        <div class="card shadow-sm p-4 mb-4 border-0">
+            <div class="row align-items-center">
+                <div class="col-md-5">
+                    <img th:src="${destinazione.immagineUrl != null and !#strings.isEmpty(destinazione.immagineUrl) ? destinazione.immagineUrl : 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600'}"
+                         class="img-fluid rounded w-100" style="max-height: 250px; object-fit: cover;" alt="Foto destinazione"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600';">
+                </div>
+                <div class="col-md-7">
+                    <span class="badge bg-secondary mb-2" th:text="${destinazione.continente}">Continente</span>
+                    <h1 class="h2 fw-bold text-dark mb-1" th:text="${destinazione.nome}">Città</h1>
+                    <p class="text-muted small mb-2">Paese: <strong th:text="${destinazione.paese}">Paese</strong></p>
+                    <p class="text-secondary" th:text="${destinazione.descrizione}">Descrizione destinazione...</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="h4 fw-bold mb-3">Pacchetti Vacanza per questa Destinazione</h2>
+
+        <div th:if="${viaggi.isEmpty()}" class="alert alert-secondary py-4 text-center">
+            Non ci sono viaggi attualmente disponibili per questa destinazione.
+        </div>
+
+        <div class="row g-4" th:unless="${viaggi.isEmpty()}">
+            <div class="col-md-4" th:each="v : ${viaggi}">
+                <div class="card h-100 shadow-sm">
+                    <img th:if="${v.immagineUrl != null}" th:src="${v.immagineUrl}" class="card-img-top" alt="Foto viaggio">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="h5 card-title fw-bold text-dark mb-1" th:text="${v.titolo}">Titolo</h3>
+                        <p class="small text-muted mb-2">
+                            Durata: <span th:text="${v.durataGiorni}">7</span> giorni | 
+                            Posti: <span th:text="${v.postiDisponibili}">10</span>
+                        </p>
+                        <p class="card-text text-secondary small" th:text="${#strings.abbreviate(v.descrizione, 90)}">Descrizione...</p>
+                        <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                            <span class="price-tag" th:text="${v.prezzo + ' €'}">500 €</span>
+                            <a th:href="@{'/viaggi/' + ${v.id}}" class="btn btn-sm btn-outline-primary">Dettagli</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>
