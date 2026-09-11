@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: header('Nuova Destinazione')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/base :: navbar}"></nav>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow p-4 border-0">
+                    <h1 class="h4 fw-bold mb-3">Nuova Destinazione</h1>
+
+                    <form th:action="@{/admin/destinazioni/salva}" th:object="${destinazione}" method="post">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label small fw-bold">Città o Luogo</label>
+                            <input type="text" id="nome" th:field="*{nome}" class="form-control form-control-sm" placeholder="es. Tokyo" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="paese" class="form-label small fw-bold">Paese</label>
+                                <input type="text" id="paese" th:field="*{paese}" class="form-control form-control-sm" placeholder="es. Giappone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="continente" class="form-label small fw-bold">Continente</label>
+                                <select id="continente" th:field="*{continente}" class="form-select form-select-sm" required>
+                                    <option value="Europa">Europa</option>
+                                    <option value="Asia">Asia</option>
+                                    <option value="America">America</option>
+                                    <option value="Africa">Africa</option>
+                                    <option value="Oceania">Oceania</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="immagineUrl" class="form-label small fw-bold">URL Foto</label>
+                            <input type="url" id="immagineUrl" th:field="*{immagineUrl}" class="form-control form-control-sm" placeholder="https://...">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="descrizione" class="form-label small fw-bold">Descrizione</label>
+                            <textarea id="descrizione" th:field="*{descrizione}" class="form-control form-control-sm" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-sm btn-primary">Salva Destinazione</button>
+                            <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-outline-secondary">Annulla</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

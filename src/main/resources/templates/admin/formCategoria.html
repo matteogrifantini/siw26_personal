@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: header('Nuova Categoria')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/base :: navbar}"></nav>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow p-4 border-0">
+                    <h1 class="h4 fw-bold mb-3">Nuova Categoria Viaggio</h1>
+
+                    <form th:action="@{/admin/categorie/salva}" th:object="${categoria}" method="post">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label small fw-bold">Nome Categoria</label>
+                            <input type="text" id="nome" th:field="*{nome}" class="form-control form-control-sm" placeholder="es. Trekking & Natura" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="descrizione" class="form-label small fw-bold">Descrizione</label>
+                            <textarea id="descrizione" th:field="*{descrizione}" class="form-control form-control-sm" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-sm btn-primary">Salva Categoria</button>
+                            <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-outline-secondary">Annulla</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>

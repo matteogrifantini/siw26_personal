@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: header('Pannello Amministrazione')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/base :: navbar}"></nav>
+    <div th:replace="~{fragments/base :: alerts}"></div>
+
+    <main class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 fw-bold mb-0">Pannello di Amministrazione</h1>
+            <div class="d-flex gap-2">
+                <a th:href="@{/admin/viaggi/nuovo}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Nuovo Viaggio
+                </a>
+                <a th:href="@{/admin/destinazioni/nuova}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-geo-alt me-1"></i>Nuova Destinazione
+                </a>
+                <a th:href="@{/admin/categorie/nuova}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-tag me-1"></i>Nuova Categoria
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card p-3 bg-light border text-center">
+                    <span class="text-muted small">Pacchetti Viaggio</span>
+                    <strong class="fs-4 text-primary" th:text="${viaggi.size()}">0</strong>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 bg-light border text-center">
+                    <span class="text-muted small">Destinazioni</span>
+                    <strong class="fs-4 text-success" th:text="${destinazioni.size()}">0</strong>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 bg-light border text-center">
+                    <span class="text-muted small">Categorie</span>
+                    <strong class="fs-4 text-warning" th:text="${categorie.size()}">0</strong>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 bg-light border text-center">
+                    <span class="text-muted small">Prenotazioni Totali</span>
+                    <strong class="fs-4 text-dark" th:text="${prenotazioni.size()}">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                <span>Gestione Pacchetti Viaggio</span>
+                <a th:href="@{/admin/viaggi/nuovo}" class="btn btn-sm btn-light py-0">Aggiungi</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Titolo</th>
+                            <th>Destinazione</th>
+                            <th>Prezzo</th>
+                            <th>Posti</th>
+                            <th>Date</th>
+                            <th class="text-end">Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${viaggi}">
+                            <td><strong th:text="${v.titolo}">Titolo</strong></td>
+                            <td th:text="${v.destinazione != null ? v.destinazione.nome : 'N/D'}">Destinazione</td>
+                            <td th:text="${v.prezzo + ' €'}">500 €</td>
+                            <td>
+                                <span class="badge" th:classappend="${v.postiDisponibili > 0} ? 'bg-success' : 'bg-danger'" 
+                                      th:text="${v.postiDisponibili}">10</span>
+                            </td>
+                            <td class="small" th:text="${#temporals.format(v.dataInizio, 'dd/MM/yy') + ' - ' + #temporals.format(v.dataFine, 'dd/MM/yy')}">Date</td>
+                            <td class="text-end">
+                                <a th:href="@{'/admin/viaggi/modifica/' + ${v.id}}" class="btn btn-sm btn-outline-primary py-0">Modifica</a>
+                                <form th:action="@{'/admin/viaggi/elimina/' + ${v.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Confermi eliminazione?')">Elimina</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+                        <span>Destinazioni</span>
+                        <a th:href="@{/admin/destinazioni/nuova}" class="btn btn-sm btn-light py-0">Aggiungi</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Città</th>
+                                    <th>Paese</th>
+                                    <th>Continente</th>
+                                    <th class="text-end">Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="d : ${destinazioni}">
+                                    <td><strong th:text="${d.nome}">Città</strong></td>
+                                    <td th:text="${d.paese}">Paese</td>
+                                    <td th:text="${d.continente}">Continente</td>
+                                    <td class="text-end">
+                                        <form th:action="@{'/admin/destinazioni/elimina/' + ${d.id}}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Confermi eliminazione?')">Elimina</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+                        <span>Categorie Viaggio</span>
+                        <a th:href="@{/admin/categorie/nuova}" class="btn btn-sm btn-light py-0">Aggiungi</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${categorie}">
+                                    <td><strong th:text="${c.nome}">Nome</strong></td>
+                                    <td class="small text-muted" th:text="${#strings.abbreviate(c.descrizione, 60)}">Descrizione</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+
+</body>
+</html>
